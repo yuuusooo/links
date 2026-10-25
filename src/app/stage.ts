@@ -2,12 +2,11 @@ import { Component, ElementRef, OnDestroy, afterNextRender, effect, inject, inpu
 
 export const MODES = ['Gather', 'Drift', 'Swarm', 'Melt', 'Wave'] as const;
 export type Mode = (typeof MODES)[number];
-
 const COUNT = 9000;
 // Critically damped: particles settle into the logo without bouncing back past it.
-const SPRING = 0.02;
-const DAMP = 0.75;
-const MOUSE_RADIUS = 90;
+const SPRING = 0.015;
+const DAMP = 0.85;
+const MOUSE_RADIUS = 100;
 const SWARM_RADIUS = 240;
 const SPLASH_RADIUS = 280;
 const BG = '#0a0a0a';
@@ -203,8 +202,8 @@ export class Stage implements OnDestroy {
 
       switch (mode) {
         case 'Gather':
-          fx = Math.sin(t * 0.8 + i * 0.37) * 0.008;
-          fy = Math.cos(t * 0.7 + i * 0.21) * 0.008;
+          fx = Math.sin(t * 0.8 + i * 0.37) * 0.012;
+          fy = Math.cos(t * 0.7 + i * 0.21) * 0.012;
           break;
         case 'Drift': {
           // Loose spring plus a slow flow field: the logo dissolves into moving smoke.
@@ -253,7 +252,7 @@ break;
           ay -= (dy / d) * f;
         }
       } else if (d < MOUSE_RADIUS) {
-        const f = (1 - d / MOUSE_RADIUS) * 0.3;
+        const f = (1 - d / MOUSE_RADIUS) * 0.45;
         ax += (dx / d) * f;
         ay += (dy / d) * f;
       }
