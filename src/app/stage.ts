@@ -29,7 +29,7 @@ const INK = '236, 234, 227';
   `,
   styles: `
     :host { display: block; position: relative; overflow: hidden; }
-    canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
     .slot { position: absolute; left: 0; right: 0; display: flex; justify-content: center; pointer-events: none; }
   `,
 })
@@ -216,7 +216,7 @@ export class Stage implements OnDestroy {
         }
         case 'Swarm': {
           // Every particle circles its own point; the cursor pulls them in.
-          const r = 8 + (i % 7) * 5;
+          const r = 2 + (i % 5) * 2;
           const s = 0.8 + (i % 5) * 0.25;
           const ph = i * 0.61;
           ox = Math.cos(t * s + ph) * r;
@@ -225,13 +225,13 @@ export class Stage implements OnDestroy {
           break;
         }
         case 'Melt': {
-          // Particles drip downward and fade, then re-form at the top.
-          const life = (t * (0.25 + (i % 5) * 0.12) + i * 0.137) % 1;
-          oy = life * life * 120;
-          ox = Math.sin(i) * 3;
-          k = 0.2;
-          a = Math.min(1, life * 8) * (1 - life);
-          break;
+          // Neighbouring particles share a phase, so the melt travels as a soft wave
+// instead of every grain blinking on its own.
+const life = (t * 0.14 + this.ty[i] * 0.002 + Math.sin(this.tx[i] * 0.03) * 0.08 + (i % 13) * 0.004) % 1;
+oy = life * life * (3 - 2 * life) * 80;
+k = 0.12;
+a = Math.min(1, life * 6) * (1 - life * life);
+break;
         }
         case 'Wave':
           oy = Math.sin(this.tx[i] * 0.025 + t * 1.8) * 16;
@@ -248,7 +248,7 @@ export class Stage implements OnDestroy {
       const d = Math.hypot(dx, dy) + 0.001;
       if (mode === 'Swarm') {
         if (d < SWARM_RADIUS) {
-          const f = (1 - d / SWARM_RADIUS) * 0.8;
+          const f = (1 - d / SWARM_RADIUS) * 0.6;
           ax -= (dx / d) * f;
           ay -= (dy / d) * f;
         }

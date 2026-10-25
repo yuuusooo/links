@@ -18,7 +18,6 @@ export class App {
   protected readonly active = computed(() => this.links[this.index()]);
 
   private wheelLock = 0;
-  private touchStart = [0, 0];
 
   protected go(i: number) {
     const n = this.links.length;
@@ -43,18 +42,5 @@ export class App {
     if (now - this.wheelLock < 800 || Math.abs(e.deltaY) < 20) return;
     this.wheelLock = now;
     this.go(this.index() + (e.deltaY > 0 ? 1 : -1));
-  }
-
-  @HostListener('window:touchstart', ['$event'])
-  onTouchStart(e: TouchEvent) {
-    this.touchStart = [e.touches[0].clientX, e.touches[0].clientY];
-  }
-
-  @HostListener('window:touchend', ['$event'])
-  onTouchEnd(e: TouchEvent) {
-    const dx = e.changedTouches[0].clientX - this.touchStart[0];
-    const dy = e.changedTouches[0].clientY - this.touchStart[1];
-    const d = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-    if (Math.abs(d) > 50) this.go(this.index() + (d < 0 ? 1 : -1));
   }
 }
