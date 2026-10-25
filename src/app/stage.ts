@@ -253,7 +253,7 @@ break;
           ay -= (dy / d) * f;
         }
       } else if (d < MOUSE_RADIUS) {
-        const f = (1 - d / MOUSE_RADIUS) * 3;
+        const f = (1 - d / MOUSE_RADIUS) * 0.3;
         ax += (dx / d) * f;
         ay += (dy / d) * f;
       }
