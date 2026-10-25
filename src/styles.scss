@@ -1,0 +1,31 @@
+@use '@fontsource-variable/syne/index.css' as syne;
+@use '@fontsource-variable/manrope/index.css' as manrope;
+
+:root {
+  --bg: #0a0a0a;
+  --paper: #eceae3;
+  --grey-light: #9a9892;
+  --grey: #5f5e5a;
+  --line: rgba(236, 234, 227, 0.18);
+  --display: 'Syne Variable', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--paper);
+  font-family: 'Manrope Variable', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

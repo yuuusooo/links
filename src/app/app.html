@@ -1,0 +1,40 @@
+<app-cursor />
+
+<main>
+  <app-stage class="stage" [image]="active().image" [mode]="mode()">
+    @for (l of [active()]; track l.id) {
+      <a class="caption" [href]="l.url" target="_blank" rel="noopener noreferrer">
+        <span class="cap-name">{{ l.name }}</span>
+        <span class="cap-handle">{{ l.handle }}</span>
+      </a>
+    }
+  </app-stage>
+
+  <div class="count" aria-hidden="true">
+    <b>{{ pad(index() + 1) }}</b>
+    <span>/ {{ pad(links.length) }}</span>
+  </div>
+
+  <span class="owner">{{ name }}</span>
+
+  <div class="modes" role="group" aria-label="Effect">
+    @for (m of modes; track m) {
+      <button type="button" [class.on]="m === mode()" [attr.aria-pressed]="m === mode()" (click)="mode.set(m)">
+        {{ m }}
+      </button>
+    }
+  </div>
+
+  <nav class="rail" aria-label="Profiles">
+    @for (l of links; track l.id; let i = $index) {
+      <button
+        type="button"
+        [class.on]="i === index()"
+        [attr.aria-current]="i === index() ? 'true' : null"
+        (click)="go(i)"
+      >
+        <span>{{ l.name }}</span>
+      </button>
+    }
+  </nav>
+</main>
