@@ -1,8 +1,9 @@
 import { Component, ElementRef, OnDestroy, afterNextRender, effect, inject, input, signal, viewChild } from '@angular/core';
 
-export const MODES = ['Gather', 'Drift', 'Swarm', 'Melt', 'Wave'] as const;
-export type Mode = (typeof MODES)[number];
+export const MODES = ['Gather', 'Drift', 'Swarm', 'Melt', 'Wave', 'Spin'] as const;export type Mode = (typeof MODES)[number];
 const COUNT = 9000;
+const DEPTH = 30;
+const SPIN_SPEED = 0.6;
 // Critically damped: particles settle into the logo without bouncing back past it.
 const SPRING = 0.015;
 const DAMP = 0.85;
@@ -52,6 +53,9 @@ export class Stage implements OnDestroy {
   private readonly tx = new Float32Array(COUNT);
   private readonly ty = new Float32Array(COUNT);
   private readonly tb = new Float32Array(COUNT); // brightness of the sampled pixel
+  private readonly tz = new Float32Array(COUNT);
+  private cx = 0;
+  private rad = 1;
   private readonly al = new Float32Array(COUNT); // brightness x mode fade, used when drawing
 
   private img?: HTMLImageElement;
@@ -157,12 +161,15 @@ export class Stage implements OnDestroy {
     const ox = (this.w - dw) / 2;
     const oy = (this.h - dh) / 2 - 28;
     this.captionTop.set(oy + dh + 28);
+    this.cx = ox + dw / 2;
+    this.rad = Math.max(dw, dh) / 2 + DEPTH;
 
     for (let i = 0; i < COUNT; i++) {
       const p = pixels[(Math.random() * pixels.length) | 0];
       this.tx[i] = ox + (p % dw) + Math.random();
       this.ty[i] = oy + Math.floor(p / dw) + Math.random();
       this.tb[i] = this.al[i] = weight(p);
+      this.tz[i] = (Math.random() - 0.5) * 2 * DEPTH;
 
       if (!this.ready) {
         this.px[i] = Math.random() * this.w;
@@ -237,6 +244,16 @@ break;
           ox = Math.cos(this.ty[i] * 0.02 + t * 1.4) * 8;
           k = 0.05;
           break;
+          case 'Spin': {
+          const rx = this.tx[i] - this.cx;
+          const cos = Math.cos(t * SPIN_SPEED);
+          const sin = Math.sin(t * SPIN_SPEED);
+          ox = rx * cos + this.tz[i] * sin - rx;
+          const z = -rx * sin + this.tz[i] * cos;
+          k = 0.1;
+          a = 0.35 + 0.65 * (0.5 + (0.5 * z) / this.rad);
+          break;
+        }
       }
 
       let ax = (this.tx[i] + ox - x) * k + fx;
